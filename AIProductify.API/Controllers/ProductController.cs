@@ -1,5 +1,6 @@
-﻿using AIProductify.API.Helper;
+﻿using AIProductify.Application.DTO.Product;
 using AIProductify.Application.Interfaces;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AIProductify.API.Controllers
@@ -10,16 +11,14 @@ namespace AIProductify.API.Controllers
     {
 
         private readonly IHtmlCrawlService _htmlCrawlService;
+        private readonly IProductService _productService;
+        private readonly IMapper _mapper;
 
-        public ProductController(IHtmlCrawlService htmlCrawlService)
+        public ProductController(IHtmlCrawlService htmlCrawlService, IProductService productService, IMapper mapper)
         {
             _htmlCrawlService = htmlCrawlService;
-        }
-
-        [HttpGet]
-        public IActionResult Index()
-        {
-            return View();
+            _productService = productService;
+            _mapper = mapper;
         }
 
 
@@ -33,21 +32,23 @@ namespace AIProductify.API.Controllers
 
             try
             {
-                
-                var product = await _htmlCrawlService.GetProductDataAsync(productUrl);
+                var productEntity = await _htmlCrawlService.GetProductDataAsync(productUrl);
 
-                return Ok(product);
+                var productDto = _mapper.Map<ProductDto>(productEntity);
+
+                await _productService.SaveProductAsync(productDto);
+
+                return Ok(productDto); 
             }
             catch (HttpRequestException ex)
             {
                 return StatusCode(500, $"Error while fetching the data: {ex.Message}");
             }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
         }
 
-
-        
-
-
-        
     }
 }

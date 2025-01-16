@@ -4,7 +4,7 @@ using HtmlAgilityPack;
 using Newtonsoft.Json.Linq;
 
 
-using Attribute = AIProductify.Core.Entities.Attribute;
+using Attribute = AIProductify.Core.Entities.ProductAttribute;
 
 namespace AIProductify.Application.Services
 {

@@ -1,6 +1,9 @@
 using AIProductify.API.Middleware;
 using AIProductify.Application.Interfaces;
 using AIProductify.Application.Services;
+using AIProductify.Infrastructure.Context;
+using Microsoft.EntityFrameworkCore;
+using AIProductify.Application.Mapping;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,7 +13,16 @@ builder.Services.AddControllers();
 
 builder.Services.AddHttpClient<ITrendyolService, TrendyolService>();
 builder.Services.AddHttpClient<IHtmlCrawlService,HtmlCrawlService>();
+builder.Services.AddScoped<IProductService, ProductService>();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
+builder.Services.AddAutoMapper(typeof(MappingProfile));
+
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlServer(connectionString)); 
+
+
 builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddSwaggerGen(c =>
@@ -20,7 +32,7 @@ builder.Services.AddSwaggerGen(c =>
         In = Microsoft.OpenApi.Models.ParameterLocation.Header,
         Name = "X-API-Key",
         Type = Microsoft.OpenApi.Models.SecuritySchemeType.ApiKey,
-        Description = "OguzEvrenselAIProductify"
+        Description = "OguzEvrensel"
     });
 
     c.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
