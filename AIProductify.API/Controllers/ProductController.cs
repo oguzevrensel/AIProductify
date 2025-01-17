@@ -50,5 +50,27 @@ namespace AIProductify.API.Controllers
             }
         }
 
+
+
+        [HttpGet("list-crawled-products")]
+        public async Task<IActionResult> ListCrawledProducts()
+        {
+            try
+            {
+                var products = await _productService.GetAllProductsAsync();
+
+                if (products == null || !products.Any())
+                {
+                    return NotFound("No products found.");
+                }
+
+                return Ok(products);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred while fetching products: {ex.Message}");
+            }
+        }
+
     }
 }

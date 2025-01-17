@@ -56,6 +56,15 @@ namespace AIProductify.Application.Services
 
 
 
+        public async Task<List<ProductDto>> GetAllProductsAsync()
+        {
+            var products = await _context.Products
+                .Include(p => p.Attributes)
+                .ToListAsync();
+
+            return _mapper.Map<List<ProductDto>>(products);
+        }
+
 
     }
 }
