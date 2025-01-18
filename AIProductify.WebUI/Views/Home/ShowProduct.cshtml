@@ -1,0 +1,62 @@
+﻿@model AIProductify.WebUI.Models.ProductViewModel
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+
+            <div class="card shadow border-0">
+                <div class="card-header bg-primary text-white text-center">
+                    <h2 class="fw-bold mb-0">Product Details</h2>
+                </div>
+
+
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-4 fw-bold">Name:</div>
+                        <div class="col-8">@Model.Name</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-4 fw-bold">Description:</div>
+                        <div class="col-8">@Model.Description</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-4 fw-bold">SKU:</div>
+                        <div class="col-8">@Model.Sku</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-4 fw-bold">Category:</div>
+                        <div class="col-8">@Model.Category</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-4 fw-bold">Brand:</div>
+                        <div class="col-8">@Model.Brand</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-4 fw-bold">Original Price:</div>
+                        <div class="col-8 text-success fw-semibold">
+                            @Model.OriginalPrice.ToString("C")
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-4 fw-bold">Discounted Price:</div>
+                        <div class="col-8 text-danger fw-semibold">
+                            @Model.DiscountedPrice.ToString("C")
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-4 fw-bold">Score:</div>
+                        <div class="col-8">
+                            <span class="badge bg-info text-dark fs-6">@Model.Score</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-footer text-center">
+                    <a asp-action="ListCrawledProducts" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> Back to Products
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

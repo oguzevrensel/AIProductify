@@ -1,0 +1,77 @@
+﻿@model List<AIProductify.WebUI.Models.ProductViewModel>
+
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-12">
+            <!-- Başlık -->
+            <div class="text-center mb-4">
+                <h1 class="fw-bold text-primary">📦 Crawled Products</h1>
+                <p class="text-muted">Here are the products you've crawled so far. Click on "Get AI Score" to see detailed insights.</p>
+            </div>
+
+            <!-- Ürün Tablosu -->
+            @if (Model.Any())
+            {
+                    <div class="table-responsive">
+                        <table class="table table-hover table-bordered align-middle">
+                            <thead class="table-primary text-center">
+                                <tr>
+                                    <th>Name</th>
+                                    <th>SKU</th>
+                                    <th>Parent Sku</th>
+                                    <th>Description</th>
+                                    <th>Original Price</th>
+                                    <th>Discounted Price</th>
+                                    <th>Category</th>
+                                    <th>Brand</th>
+                                    <th>Attributes</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            @foreach (var product in Model)
+                            {
+                                        <tr>
+                                            <td>@product.Name</td>
+                                            <td>@product.Sku</td>
+                                            <td>@string.Join(", ", product.ParentSku ?? new List<string>())</td>
+                                            <td>@product.Description</td>
+                                            <td>@product.OriginalPrice.ToString("C")</td>
+                                            <td>@product.DiscountedPrice.ToString("C")</td>
+                                            <td>@product.Category</td>
+                                            <td>@product.Brand</td>
+                                            <td>
+                                        @if (product.Attributes != null && product.Attributes.Any())
+                                        {
+                                                        <ul class="list-unstyled mb-0">
+                                                @foreach (var attr in product.Attributes)
+                                                {
+                                                                    <li><strong>@attr.Key:</strong> @attr.Name</li>
+                                                }
+                                                        </ul>
+                                        }
+                                        else
+                                        {
+                                                        <span>No attributes</span>
+                                        }
+                                            </td>
+                                            <td class="text-center">
+                                                <a asp-action="ShowProduct" asp-route-sku="@product.Sku" class="btn btn-sm btn-info text-white">
+                                                    <i class="bi bi-eye"></i> Get AI Score
+                                                </a>
+                                            </td>
+                                        </tr>
+                            }
+                            </tbody>
+                        </table>
+                    </div>
+            }
+            else
+            {
+                    <div class="alert alert-warning text-center">
+                        <i class="bi bi-exclamation-triangle"></i> No products found.
+                    </div>
+            }
+        </div>
+    </div>
+</div>

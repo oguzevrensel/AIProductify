@@ -1,8 +1,47 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewBag.Title = "Crawl Product";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+
+            <div class="text-center mb-4">
+                <h1 class="fw-bold text-primary">🌐 Crawl Product</h1>
+                <p class="text-muted">Enter a product URL to fetch its details and process it.</p>
+            </div>
+
+            <div class="card shadow border-0">
+                <div class="card-body">
+
+                    <form method="post" asp-action="CrawlProduct">
+                        <div class="form-group mb-4">
+                            <label for="productUrl" class="form-label fw-semibold">Product URL</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-primary text-white">
+                                    <i class="bi bi-link-45deg"></i>
+                                </span>
+                                <input type="text" id="productUrl" name="productUrl" class="form-control" placeholder="Enter the product URL..." required />
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <button type="submit" class="btn btn-primary px-4">
+                                <i class="bi bi-search"></i> Crawl
+                            </button>
+                            <a asp-action="ListCrawledProducts" class="btn btn-outline-secondary px-4">
+                                <i class="bi bi-list-ul"></i> View Crawled Products
+                            </a>
+                        </div>
+                    </form>
+                </div>
+
+                @if (ViewBag.Message != null)
+                {
+                    <div class="card-footer text-center bg-light">
+                        <p class="fw-semibold text-success">@ViewBag.Message</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
 </div>

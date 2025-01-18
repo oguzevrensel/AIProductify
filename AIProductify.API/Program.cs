@@ -58,7 +58,6 @@ builder.Services.AddControllers();
 builder.Services.Configure<GetSettingsConfig>(builder.Configuration.GetSection("OpenAI"));
 
 
-builder.Services.AddHttpClient<ITrendyolService, TrendyolService>();
 builder.Services.AddHttpClient<IHtmlCrawlService, HtmlCrawlService>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IOpenAiService, OpenAiService>();
