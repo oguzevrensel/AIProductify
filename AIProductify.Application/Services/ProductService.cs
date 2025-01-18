@@ -66,5 +66,13 @@ namespace AIProductify.Application.Services
         }
 
 
+        public async Task<Product> GetProductBySkuAsync(string sku)
+        {
+            return await _context.Products
+                .Include(p => p.Attributes)
+                .FirstOrDefaultAsync(p => p.Sku == sku);
+        }
+
+
     }
 }

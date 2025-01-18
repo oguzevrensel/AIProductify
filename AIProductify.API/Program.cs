@@ -7,6 +7,7 @@ using AIProductify.Application.Mapping;
 using Serilog;
 using Serilog.Sinks.MSSqlServer;
 using System.Collections.ObjectModel;
+using AIProductify.Application.Helper;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -32,7 +33,6 @@ ColumnOptions GetCustomSqlColumnOptions()
 
     // Varsayýlan sütunlarý kaldýr
     columnOptions.Store.Remove(StandardColumn.Message);
-    //columnOptions.Store.Remove(StandardColumn.MessageTemplate);
     columnOptions.Store.Remove(StandardColumn.Properties);
     columnOptions.Store.Remove(StandardColumn.Level);
     columnOptions.Store.Remove(StandardColumn.TimeStamp);
@@ -55,10 +55,16 @@ ColumnOptions GetCustomSqlColumnOptions()
 // Add services to the container.
 
 builder.Services.AddControllers();
+builder.Services.Configure<GetSettingsConfig>(builder.Configuration.GetSection("OpenAI"));
+
 
 builder.Services.AddHttpClient<ITrendyolService, TrendyolService>();
-builder.Services.AddHttpClient<IHtmlCrawlService,HtmlCrawlService>();
+builder.Services.AddHttpClient<IHtmlCrawlService, HtmlCrawlService>();
 builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<IOpenAiService, OpenAiService>();
+builder.Services.AddScoped<IAiService, AiService>();
+builder.Services.AddScoped<ITranslationService, TranslationService>();
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 
 builder.Services.AddAutoMapper(typeof(MappingProfile));
