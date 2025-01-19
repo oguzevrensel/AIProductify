@@ -38,13 +38,30 @@ namespace AIProductify.API.Controllers
 
             try
             {
+               
                 var productEntity = await _htmlCrawlService.GetProductDataAsync(productUrl);
-
                 var productDto = _mapper.Map<ProductDto>(productEntity);
 
+                
                 await _productService.SaveProductAsync(productDto);
 
-                return Ok(productDto);
+                
+                var parentSkuWithName = productEntity.ParentSkuWithDetails;
+
+                foreach (var (sku, name) in parentSkuWithName)
+                {
+                    
+                    var parentUrl = GenerateProductUrl(productEntity.Brand, name, sku);
+
+                    
+                    var parentProductEntity = await _htmlCrawlService.GetProductDataAsync(parentUrl);
+
+                    
+                    var parentProductDto = _mapper.Map<ProductDto>(parentProductEntity);
+                    await _productService.SaveProductAsync(parentProductDto);
+                }
+
+                return Ok(new { MainProduct = productDto });
             }
             catch (HttpRequestException ex)
             {
@@ -126,6 +143,15 @@ namespace AIProductify.API.Controllers
             }
         }
 
+
+        private string GenerateProductUrl(string brand, string name, string sku)
+        {
+            
+            var formattedName = name.Replace(" ", "-").ToLower();
+
+            
+            return $"https://www.trendyol.com/{brand}/{formattedName}-p-{sku}";
+        }
 
     }
 

@@ -42,6 +42,7 @@ namespace AIProductify.Application.Services
                 Attributes = ExtractAttributes(htmlDoc),
                 Category = ExtractCategory(htmlDoc),
                 Brand = ExtractBrand(htmlDoc),
+                ParentSkuWithDetails = ExtractParentSkuWithName(htmlDoc),
                 OriginalPrice = extractProduct?["variants"]?[0]?["price"]?["originalPrice"]?["value"]?.ToObject<decimal>() ?? 0,
                 DiscountedPrice = extractProduct?["variants"]?[0]?["price"]?["discountedPrice"]?["value"]?.ToObject<decimal>() ?? 0,
                 Images = extractProduct?["images"]?.Select(image => image.ToString()).ToList() ?? new List<string>()
@@ -106,20 +107,25 @@ namespace AIProductify.Application.Services
                 var jsonObject = System.Text.Json.JsonDocument.Parse(jsonContent);
 
                 var parentSkus = new List<string>();
+                string mainSku = null;
+
+                if (jsonObject.RootElement.TryGetProperty("sku", out var skuProperty))
+                {
+                    mainSku = skuProperty.GetString();
+                }
 
                 if (jsonObject.RootElement.TryGetProperty("hasVariant", out var hasVariantArray) &&
                     hasVariantArray.ValueKind == System.Text.Json.JsonValueKind.Array)
                 {
                     foreach (var variant in hasVariantArray.EnumerateArray())
                     {
-                        if (variant.TryGetProperty("isVariantOf", out var isVariantOfElement) &&
-                            isVariantOfElement.TryGetProperty("@id", out var idElement))
+                        if (variant.TryGetProperty("sku", out var variantSku))
                         {
-                            var idUrl = idElement.GetString();
-                            var match = System.Text.RegularExpressions.Regex.Match(idUrl, @"-p-(\d+)");
-                            if (match.Success)
+                            var skuValue = variantSku.GetString();
+
+                            if (!string.IsNullOrEmpty(mainSku) && skuValue != mainSku)
                             {
-                                parentSkus.Add(match.Groups[1].Value); 
+                                parentSkus.Add(skuValue);
                             }
                         }
                     }
@@ -301,6 +307,58 @@ namespace AIProductify.Application.Services
             return null;
         }
 
+
+
+
+        private List<(string Sku, string Name)> ExtractParentSkuWithName(HtmlDocument htmlDoc)
+        {
+            var jsonNode = htmlDoc.DocumentNode.SelectSingleNode("//script[@type='application/ld+json']");
+            if (jsonNode == null)
+            {
+                return new List<(string Sku, string Name)>(); 
+            }
+
+            try
+            {
+                var jsonContent = jsonNode.InnerText;
+                var jsonObject = System.Text.Json.JsonDocument.Parse(jsonContent);
+
+                var parentSkuWithName = new List<(string Sku, string Name)>();
+
+                if (jsonObject.RootElement.TryGetProperty("hasVariant", out var hasVariantArray) &&
+                    hasVariantArray.ValueKind == System.Text.Json.JsonValueKind.Array)
+                {
+                    foreach (var variant in hasVariantArray.EnumerateArray())
+                    {
+                        string sku = null;
+                        string name = null;
+
+                       
+                        if (variant.TryGetProperty("sku", out var skuProperty))
+                        {
+                            sku = skuProperty.GetString();
+                        }
+
+                       
+                        if (variant.TryGetProperty("name", out var nameProperty))
+                        {
+                            name = nameProperty.GetString();
+                        }
+
+                        if (!string.IsNullOrEmpty(sku) && !string.IsNullOrEmpty(name))
+                        {
+                            parentSkuWithName.Add((Sku: sku, Name: name));
+                        }
+                    }
+                }
+
+                return parentSkuWithName;
+            }
+            catch (System.Text.Json.JsonException)
+            {
+                return new List<(string Sku, string Name)>(); 
+            }
+        }
 
 
 

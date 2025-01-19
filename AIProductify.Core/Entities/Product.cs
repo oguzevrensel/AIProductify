@@ -1,5 +1,6 @@
 ﻿
 
+using System.ComponentModel.DataAnnotations.Schema;
 using AIProductify.Core.Common;
 
 namespace AIProductify.Core.Entities
@@ -12,6 +13,8 @@ namespace AIProductify.Core.Entities
         public List<string>? ParentSku { get; set; }
         public decimal OriginalPrice { get; set; }
         public decimal DiscountedPrice { get; set; }
+        [NotMapped]
+        public List<(string Sku, string Name)> ParentSkuWithDetails { get; set; }
         public List<ProductAttribute>? Attributes { get; set; }
         public string? Category { get; set; }
         public string? Brand { get; set; }
